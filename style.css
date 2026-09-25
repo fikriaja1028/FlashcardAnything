@@ -1,0 +1,380 @@
+/* FlashcardAnything - clean, modern, mobile-first. No external dependencies. */
+
+:root {
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --text: #1a1d26;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --success: #16a34a;
+  --danger: #dc2626;
+  --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --card-shadow: 0 12px 40px rgba(79, 70, 225, 0.14);
+  --radius: 16px;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+}
+
+[data-theme="dark"] {
+  --bg: #0f1220;
+  --surface: #1a1e32;
+  --text: #eef0ff;
+  --muted: #9aa1b8;
+  --border: #2b3152;
+  --primary: #818cf8;
+  --primary-hover: #a5b4fc;
+  --shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+  --card-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.55;
+}
+
+.container {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* ---------- Header ---------- */
+.site-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.logo {
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 800;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: auto;
+  white-space: nowrap;
+}
+
+.logo-accent { color: var(--primary); }
+img.logo-mark { height: 2rem; width: auto; display: block; }
+
+.main-nav { display: flex; gap: 6px; }
+
+.nav-btn {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.nav-btn:hover { background: var(--bg); color: var(--text); }
+.nav-btn.active { background: var(--primary); color: #fff; }
+
+.icon-btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1.15rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon-btn:hover { background: var(--bg); }
+
+/* GitHub link styled as an icon button (inline SVG, no external assets). */
+.github-btn { text-decoration: none; }
+.github-btn svg { width: 20px; height: 20px; fill: currentColor; display: block; }
+
+/* Icon buttons (theme + GitHub) travel as one group so they never split across rows. */
+.header-actions { display: flex; align-items: center; gap: 12px; }
+
+/* Keep header usable on narrow phones: logo + icons stay on row 1, nav becomes a full-width tab row. */
+@media (max-width: 560px) {
+  .header-inner { flex-wrap: wrap; row-gap: 8px; }
+  .logo { font-size: 0.95rem; }
+  img.logo-mark { height: 1.75rem; }
+  .header-actions { order: 2; }
+  .main-nav { order: 3; width: 100%; }
+  .main-nav .nav-btn { flex: 1; text-align: center; padding: 8px 4px; font-size: 0.88rem; }
+}
+
+/* ---------- Views ---------- */
+main { flex: 1; padding: 24px 0 48px; }
+.view { display: none; }
+.view.active { display: block; }
+
+.hero h1 { margin: 20px 0 4px; font-size: 1.6rem; letter-spacing: -0.02em; }
+.tagline { margin: 0 0 8px; font-size: 1.1rem; }
+.hero-sub { color: var(--muted); margin: 0; }
+
+/* ---------- Panels & forms ---------- */
+.card.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  margin-top: 18px;
+}
+
+.field-label { font-weight: 700; display: block; margin-bottom: 8px; }
+
+textarea, input[type="text"], select {
+  width: 100%;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+textarea { resize: vertical; min-height: 150px; }
+textarea:focus, input:focus, select:focus, button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+.create-options { margin-top: 12px; }
+.option-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.option-row select, .option-row input { width: auto; }
+.hint { color: var(--muted); font-size: 0.9rem; }
+.hint code {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0 5px;
+}
+
+.btn-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.btn-row.center { justify-content: center; }
+
+.btn {
+  font: inherit;
+  font-weight: 700;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 12px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  min-height: 48px; /* thumb-friendly */
+}
+
+.btn:hover { filter: brightness(0.97); }
+.btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-secondary { background: var(--text); border-color: var(--text); color: var(--bg); }
+.btn-ghost { background: transparent; }
+.btn-success { background: var(--success); border-color: var(--success); color: #fff; }
+.btn-danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn-small { min-height: 40px; padding: 8px 12px; font-size: 0.9rem; }
+
+.parse-info {
+  margin-top: 12px;
+  font-size: 0.92rem;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+.parse-info.warn { border-color: #f59e0b; }
+
+.count-badge {
+  background: var(--primary);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  padding: 2px 10px;
+  vertical-align: middle;
+}
+
+.preview-list { list-style: none; margin: 12px 0 0; padding: 0; max-height: 260px; overflow: auto; }
+.preview-list li {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  background: var(--bg);
+}
+.preview-list .p-front { font-weight: 700; }
+.preview-list .p-sep { color: var(--muted); }
+
+.save-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.save-row input { flex: 1; min-width: 200px; }
+
+/* ---------- Study ---------- */
+.empty-state { text-align: center; }
+.empty-big { font-size: 2.4rem; margin: 0; }
+.muted { color: var(--muted); }
+
+/* Keep the study column comfortable on wide desktops (card would look stretched full-width). */
+#study-main { max-width: 720px; margin: 0 auto; }
+
+.study-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+}
+.progress { flex: 1; height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; }
+.progress-fill { height: 100%; width: 0; background: var(--primary); transition: width 0.25s ease; }
+
+.flashcard-wrap { perspective: 1200px; margin: 18px 0 6px; }
+.flashcard { cursor: pointer; }
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  min-height: 260px;
+  transition: transform 0.5s ease;
+  transform-style: preserve-3d;
+}
+.flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+
+.flashcard-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 28px 22px;
+  border-radius: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--card-shadow);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow-y: auto; /* long text scrolls inside the card instead of spilling out */
+}
+
+.flashcard-face p {
+  margin: 10px 0 auto;
+  font-size: 1.7rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.flashcard-back { transform: rotateY(180deg); background: var(--primary); color: #fff; border-color: var(--primary); }
+.face-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+  font-weight: 700;
+  margin-top: auto; /* pairs with p's margin-bottom:auto: centers short text, keeps long text scrollable from the top */
+}
+
+.summary { text-align: center; margin-top: 18px; }
+
+/* ---------- Decks ---------- */
+.decks-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.decks-list { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 12px; }
+.deck-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px;
+}
+.deck-item h3 { margin: 0 0 4px; }
+.deck-meta { color: var(--muted); font-size: 0.88rem; margin: 0 0 10px; }
+.deck-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Sample import JSON block. */
+.sample-block summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.sample-block pre {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  overflow: auto;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin: 12px 0 0;
+}
+.sample-block .btn-row { margin-top: 10px; }
+
+/* ---------- Toast / misc ---------- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--text);
+  color: var(--bg);
+  padding: 10px 16px;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s;
+  max-width: calc(100vw - 32px);
+  text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* Responsive: 360px and up is the baseline; enhance on wider screens */
+@media (min-width: 640px) {
+  .hero h1 { font-size: 2rem; }
+  .flashcard-inner { min-height: 300px; }
+  .flashcard-face p { font-size: 2rem; }
+}
+
+/* With the wider layout, show decks in two columns on desktop. */
+@media (min-width: 800px) {
+  .decks-list { grid-template-columns: 1fr 1fr; }
+}
+
+/* Print: output a simple list of cards */
+@media print {
+  .site-header, .btn-row, .study-topbar,
+  #view-create, #view-decks, #toast, #study-empty { display: none !important; }
+  #view-study { display: block !important; }
+  .flashcard-wrap { display: none; }
+  body { background: #fff; color: #000; }
+}

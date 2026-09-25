@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="FlashcardAnything - Turn anything into flashcards. No sign-up. Just fast, simple flashcards." />
+  <title>FlashcardAnything - Turn anything into flashcards</title>
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="#" id="logo-link" aria-label="FlashcardAnything home">
+        <img class="logo-mark" src="logo-transparent.png" alt="" />
+        <span class="logo-text">Flashcard<span class="logo-accent">Anything</span></span>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <button class="nav-btn active" data-view="create" type="button">Create</button>
+        <button class="nav-btn" data-view="study" type="button">Study</button>
+        <button class="nav-btn" data-view="decks" type="button">My Decks</button>
+      </nav>
+      <div class="header-actions">
+        <button id="theme-toggle" class="icon-btn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+          <span id="theme-icon" aria-hidden="true">&#9790;</span>
+        </button>
+        <a class="icon-btn github-btn" href="https://github.com/fikriaja1028/FlashcardAnything" target="_blank" rel="noopener" aria-label="View on GitHub" title="View on GitHub">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- ============ VIEW: CREATE ============ -->
+    <section id="view-create" class="view active" aria-labelledby="create-heading">
+      <div class="hero">
+        <h1 id="create-heading">FlashcardAnything</h1>
+        <p class="tagline"><strong>Turn anything into flashcards.</strong></p>
+        <p class="hero-sub">Paste your words, notes, or definitions, study in seconds.<br />No sign-up. Just fast, simple flashcards.</p>
+      </div>
+
+      <div class="card panel">
+        <label class="field-label" for="input-text">Paste your content below</label>
+        <textarea
+          id="input-text"
+          rows="8"
+          spellcheck="false"
+          placeholder="Hola - Hello&#10;Gato - Cat&#10;Perro - Dog"
+        ></textarea>
+
+        <div class="create-options">
+          <div class="option-row">
+            <label for="delimiter-select">Separator:</label>
+            <select id="delimiter-select">
+              <option value="auto" selected>Auto-detect</option>
+              <option value="dash">Dash (&nbsp;-&nbsp;)</option>
+              <option value="colon">Colon (:)</option>
+              <option value="pipe">Pipe (|)</option>
+              <option value="tab">Tab</option>
+              <option value="custom">Custom&hellip;</option>
+            </select>
+            <input id="custom-delimiter" type="text" placeholder="Custom separator" maxlength="10" hidden aria-label="Custom separator" />
+          </div>
+          <p class="hint">
+            <strong>Format A</strong> - one card per line: <code>Hola - Hello</code> (supports <code>-</code>, <code>:</code>, <code>|</code>, tab).<br />
+            <strong>Format B</strong> - alternating lines: front, then back on the next line.
+          </p>
+        </div>
+
+        <div class="btn-row">
+          <button id="btn-generate" class="btn btn-primary" type="button">Generate Flashcards</button>
+          <button id="btn-clear" class="btn btn-ghost" type="button">Clear</button>
+        </div>
+
+        <div id="parse-info" class="parse-info" hidden></div>
+      </div>
+
+      <div id="preview-panel" class="card panel" hidden>
+        <h2>Preview <span id="preview-count" class="count-badge"></span></h2>
+        <ul id="preview-list" class="preview-list"></ul>
+        <div class="save-row">
+          <input id="deck-title" type="text" placeholder="Deck title, e.g. Spanish Basics" maxlength="80" aria-label="Deck title" />
+          <button id="btn-save" class="btn btn-secondary" type="button">Save Deck</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: STUDY ============ -->
+    <section id="view-study" class="view" aria-labelledby="study-heading">
+      <h2 id="study-heading" class="visually-hidden">Study</h2>
+
+      <div id="study-empty" class="card panel empty-state">
+        <p class="empty-big">&#128196;</p>
+        <p>No cards to study yet.</p>
+        <p class="muted">Paste some text in <strong>Create</strong> and hit Generate, or open a saved deck.</p>
+        <button class="btn btn-primary" data-view="create" type="button">Go to Create</button>
+      </div>
+
+      <div id="study-main" hidden>
+        <div class="study-topbar">
+          <span id="position-indicator" aria-live="polite">1 / 1</span>
+          <div class="progress" aria-hidden="true"><div id="progress-fill" class="progress-fill"></div></div>
+          <span id="score-live" class="muted">&#10003; 0 &nbsp;&#10007; 0</span>
+        </div>
+
+        <div class="flashcard-wrap">
+          <div id="flashcard" class="flashcard" role="button" tabindex="0" aria-label="Flashcard. Press Space or click to flip.">
+            <div class="flashcard-inner">
+              <div class="flashcard-face flashcard-front">
+                <span class="face-label">Front</span>
+                <p id="card-front"></p>
+              </div>
+              <div class="flashcard-face flashcard-back">
+                <span class="face-label">Back</span>
+                <p id="card-back"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row center">
+          <button id="btn-flip" class="btn" type="button">Flip (Space)</button>
+        </div>
+
+        <div class="btn-row center study-nav">
+          <button id="btn-prev" class="btn btn-ghost" type="button">&larr; Prev</button>
+          <button id="btn-shuffle" class="btn btn-ghost" type="button">&#8646; Shuffle</button>
+          <button id="btn-next" class="btn btn-ghost" type="button">Next &rarr;</button>
+        </div>
+
+        <div class="btn-row center grade-row">
+          <button id="btn-missed" class="btn btn-danger" type="button">&#10007; I missed it</button>
+          <button id="btn-knew" class="btn btn-success" type="button">&#10003; I knew it</button>
+        </div>
+
+        <div class="btn-row center">
+          <button id="btn-print" class="btn btn-ghost btn-small" type="button">Print / PDF</button>
+          <button id="btn-restart" class="btn btn-ghost btn-small" type="button">Restart</button>
+          <button id="btn-clear-study" class="btn btn-ghost btn-small" type="button">Clear study</button>
+        </div>
+
+        <!-- Summary -->
+        <div id="study-summary" class="card panel summary" hidden>
+          <h3>Session complete!</h3>
+          <p id="summary-text">You got 0 of 0 right. Nice!</p>
+          <div class="btn-row center">
+            <button id="btn-review-missed" class="btn btn-secondary" type="button">Review missed cards only</button>
+            <button id="btn-summary-restart" class="btn btn-ghost" type="button">Study all again</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: MY DECKS ============ -->
+    <section id="view-decks" class="view" aria-labelledby="decks-heading">
+      <div class="decks-header">
+        <h2 id="decks-heading">My Decks</h2>
+        <div class="btn-row">
+          <button id="btn-export-all" class="btn btn-ghost btn-small" type="button">Export all</button>
+          <button id="btn-import" class="btn btn-ghost btn-small" type="button">Import JSON</button>
+          <input id="import-file" type="file" accept=".json,application/json" hidden />
+        </div>
+      </div>
+      <div id="decks-empty" class="card panel empty-state">
+        <p class="empty-big">&#128193;</p>
+        <p>No decks yet. Create your first one!</p>
+        <button class="btn btn-primary" data-view="create" type="button">Create a deck</button>
+      </div>
+      <ul id="decks-list" class="decks-list"></ul>
+
+      <details class="card panel sample-block">
+        <summary>Import format: see a sample JSON</summary>
+        <pre id="sample-json">{
+  "id": "spanish-basics-001",
+  "title": "Spanish Basics",
+  "cards": [
+    { "front": "Hola", "back": "Hello" },
+    { "front": "Gato", "back": "Cat" },
+    { "front": "Perro", "back": "Dog" }
+  ],
+  "createdAt": 1234567890
+}</pre>
+        <div class="btn-row">
+          <button id="btn-copy-sample" class="btn btn-ghost btn-small" type="button">Copy sample</button>
+          <button id="btn-download-sample" class="btn btn-ghost btn-small" type="button">Download sample</button>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
