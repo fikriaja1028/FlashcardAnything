@@ -474,30 +474,37 @@ function renderDecks() {
   });
 }
 
+function importParsedDecks(parsed) {
+  var candidates = Array.isArray(parsed) ? parsed : [parsed];
+  var decks = loadDecks();
+  var imported = 0;
+  var existingIds = {};
+  decks.forEach(function (d) { existingIds[d.id] = true; });
+
+  candidates.forEach(function (c) {
+    if (isValidDeck(c)) {
+      var deck = normalizeDeck(c);
+      if (existingIds[deck.id]) deck.id = makeId(); // avoid id collision
+      existingIds[deck.id] = true;
+      decks.unshift(deck);
+      imported++;
+    }
+  });
+
+  if (imported > 0) {
+    saveDecks(decks);
+  }
+  return imported;
+}
+
 function handleImportFile(file) {
   if (!file) return;
   var reader = new FileReader();
   reader.onload = function () {
     try {
       var parsed = JSON.parse(String(reader.result));
-      var candidates = Array.isArray(parsed) ? parsed : [parsed];
-      var decks = loadDecks();
-      var imported = 0;
-      var existingIds = {};
-      decks.forEach(function (d) { existingIds[d.id] = true; });
-
-      candidates.forEach(function (c) {
-        if (isValidDeck(c)) {
-          var deck = normalizeDeck(c);
-          if (existingIds[deck.id]) deck.id = makeId(); // avoid id collision
-          existingIds[deck.id] = true;
-          decks.unshift(deck);
-          imported++;
-        }
-      });
-
+      var imported = importParsedDecks(parsed);
       if (imported > 0) {
-        saveDecks(decks);
         renderDecks();
         toast("Imported " + imported + " deck(s).");
       } else {
@@ -509,6 +516,59 @@ function handleImportFile(file) {
     $("#import-file").value = "";
   };
   reader.readAsText(file);
+}
+
+/* ---------------- Paste JSON modal ---------------- */
+
+function openPasteModal() {
+  var modal = $("#paste-modal");
+  if (!modal) return;
+  modal.hidden = false;
+  var err = $("#paste-json-error");
+  if (err) err.hidden = true;
+  var ta = $("#paste-json-text");
+  if (ta) ta.focus();
+}
+
+function closePasteModal() {
+  var modal = $("#paste-modal");
+  if (!modal) return;
+  modal.hidden = true;
+}
+
+function handlePasteImport() {
+  var ta = $("#paste-json-text");
+  var errBox = $("#paste-json-error");
+  function showError(msg) {
+    if (errBox) {
+      errBox.hidden = false;
+      errBox.textContent = msg;
+    } else {
+      toast(msg);
+    }
+  }
+  var text = ta ? ta.value.trim() : "";
+  if (!text) {
+    showError("Paste JSON first. Tip: click Fill sample to see the format.");
+    return;
+  }
+  var parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch (e) {
+    showError("Invalid JSON: " + (e && e.message ? e.message : "could not be parsed."));
+    return;
+  }
+  var imported = importParsedDecks(parsed);
+  if (imported > 0) {
+    renderDecks();
+    ta.value = "";
+    if (errBox) errBox.hidden = true;
+    closePasteModal();
+    toast("Imported " + imported + " deck(s).");
+  } else {
+    showError("No valid decks found. Each deck needs a cards array like { \"front\": \"Hola\", \"back\": \"Hello\" }.");
+  }
 }
 
 /* ---------------- Events & init ---------------- */
@@ -598,6 +658,17 @@ function init() {
   $("#import-file").addEventListener("change", function (e) {
     if (e.target.files && e.target.files[0]) handleImportFile(e.target.files[0]);
   });
+  $("#btn-paste-json").addEventListener("click", openPasteModal);
+  $("#btn-paste-cancel").addEventListener("click", closePasteModal);
+  $("#btn-paste-import").addEventListener("click", handlePasteImport);
+  $("#btn-paste-sample").addEventListener("click", function () {
+    var sample = $("#sample-json") ? $("#sample-json").textContent.trim() : "";
+    $("#paste-json-text").value = sample;
+    $("#paste-json-error").hidden = true;
+    $("#paste-json-text").focus();
+  });
+  var pasteOverlay = document.querySelector("[data-close-paste]");
+  if (pasteOverlay) pasteOverlay.addEventListener("click", closePasteModal);
   $("#btn-export-all").addEventListener("click", function () {
     var decks = loadDecks();
     if (!decks.length) { toast("No decks to export."); return; }
@@ -618,6 +689,11 @@ function init() {
   // Keyboard shortcuts: Space = flip, arrows = navigate (only in study view,
   // and never while typing in a text field).
   document.addEventListener("keydown", function (e) {
+    var pasteModal = $("#paste-modal");
+    if (pasteModal && !pasteModal.hidden && e.key === "Escape") {
+      closePasteModal();
+      return;
+    }
     var studyActive = $("#view-study").classList.contains("active");
     if (!studyActive || !session.cards.length) return;
     var tag = (document.activeElement && document.activeElement.tagName) || "";

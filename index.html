@@ -158,6 +158,7 @@
         <h2 id="decks-heading">My Decks</h2>
         <div class="btn-row">
           <button id="btn-export-all" class="btn btn-ghost btn-small" type="button">Export all</button>
+          <button id="btn-paste-json" class="btn btn-ghost btn-small" type="button">Paste JSON</button>
           <button id="btn-import" class="btn btn-ghost btn-small" type="button">Import JSON</button>
           <input id="import-file" type="file" accept=".json,application/json" hidden />
         </div>
@@ -190,6 +191,28 @@
   </main>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- ============ MODAL: PASTE JSON ============ -->
+  <div id="paste-modal" class="modal" hidden>
+    <div class="modal-overlay" data-close-paste></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="paste-modal-title">
+      <h3 id="paste-modal-title">Paste JSON deck</h3>
+      <p class="muted modal-sub">Paste one deck object or an array of decks, then click Import.</p>
+      <label class="field-label visually-hidden" for="paste-json-text">JSON deck to import</label>
+      <textarea
+        id="paste-json-text"
+        rows="10"
+        spellcheck="false"
+        placeholder='{"title": "Spanish Basics", "cards": [{"front": "Hola", "back": "Hello"}]}'
+      ></textarea>
+      <div id="paste-json-error" class="parse-info warn" hidden></div>
+      <div class="btn-row">
+        <button id="btn-paste-import" class="btn btn-primary btn-small" type="button">Import deck(s)</button>
+        <button id="btn-paste-sample" class="btn btn-ghost btn-small" type="button">Fill sample</button>
+        <button id="btn-paste-cancel" class="btn btn-ghost btn-small" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>

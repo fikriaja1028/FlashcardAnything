@@ -334,6 +334,43 @@ textarea:focus, input:focus, select:focus, button:focus-visible {
 }
 .sample-block .btn-row { margin-top: 10px; }
 
+/* ---------- Paste JSON modal ---------- */
+.modal[hidden] { display: none; }
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+.modal-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+.modal-dialog h3 { margin: 0 0 4px; }
+.modal-sub { margin: 0 0 12px; font-size: 0.9rem; }
+.modal-dialog textarea {
+  min-height: 200px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+}
+#paste-json-error { margin-top: 10px; }
+
 /* ---------- Toast / misc ---------- */
 
 .toast {
